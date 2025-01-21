@@ -31,7 +31,11 @@ function ClubChat() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+      } else {
+        setUser(null);
       }
+    }, (error) => {
+      console.error("Error in onAuthStateChanged:", error);
     });
     return () => unsubscribe();
   }, []);
@@ -40,9 +44,14 @@ function ClubChat() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      setUser(result.user);
+      if (result.user) {
+        setUser(result.user);
+      } else {
+        console.error("No user returned from sign-in.");
+      }
     } catch (error) {
-      console.error('Error during sign-in:', error);
+      console.error('Error during sign-in:', error.message);
+      alert("Failed to sign in. Please try again.");
     }
   };
 
@@ -51,7 +60,8 @@ function ClubChat() {
       await signOut(auth);
       setUser(null);
     } catch (error) {
-      console.error('Error during sign-out:', error);
+      console.error('Error during sign-out:', error.message);
+      alert("Failed to sign out. Please try again.");
     }
   };
 
@@ -92,6 +102,10 @@ function ClubChat() {
 
   useEffect(() => {
     if (user) fetchMessages();
+  }, [user]);
+
+  useEffect(() => {
+    console.log("Current user:", user);
   }, [user]);
 
   return (

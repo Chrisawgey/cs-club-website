@@ -1,106 +1,80 @@
-// Home.js
 import React from 'react';
-import { Container, Typography, Box, Button, Slide, Grow, Grid, Paper } from '@mui/material';
-import { CalendarToday } from '@mui/icons-material';
+import { Container, Typography, Box, Grid, Card, CardActionArea, CardContent } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-function Home() {
-  const upcomingEvents = [
-    { date: 'January 28, 2025', event: 'Intro to Machine Learning' },
-    { date: 'February 4, 2025', event: 'LeetCode Practice Session' },
-    { date: 'February 11, 2025', event: 'Cybersecurity Basics' },
-    { date: 'February 15, 2025', event: 'Cybersecurity Basics 2' },
-    { date: 'March 9, 2025', event: 'Hackathon' },
-    
-  ];
+const theme = createTheme();
 
+function HomePage() {
   return (
-    <Container maxWidth="lg" sx={{ textAlign: 'center', py: 4 }}>
-      {/* Banner Section */}
-      <Slide direction="down" in={true} timeout={800}>
+    <ThemeProvider theme={theme}>
+      <Box>
+        <style>
+          {`
+            @keyframes moveColors {
+              0% { background-position: 0% 50%; }
+              50% { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
+            }
+          `}
+        </style>
+        {/* Hero Section with Background Animation */}
         <Box
           sx={{
-            backgroundImage: 'url(/images/logo.jpeg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            height: '300px',
-            borderRadius: '10px',
-            mb: 4,
+            height: '50vh',
+            backgroundImage: 'linear-gradient(90deg, blue, purple, red, pink), url(/images/MIT_EECS_pattern-repeat_black_000000.svg)',
+            backgroundSize: '200% 200%',
+            animation: 'moveColors 10s linear infinite',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            p: 4,
           }}
-        ></Box>
-      </Slide>
-
-      <Slide direction="up" in={true} timeout={800}>
-        <Typography variant="h3" gutterBottom color="primary">
-          Welcome to the UCNJ CS & CybSEC Club!
-        </Typography>
-      </Slide>
-      <Slide direction="up" in={true} timeout={800}>
-        <Typography variant="h6" color="textSecondary" gutterBottom>
-          Empowering the next generation of computer scientists and cybersecurity professionals.
-        </Typography>
-      </Slide>
-      <Grow in={true} timeout={1000}>
-        <Button variant="contained" color="secondary" size="large" sx={{ mt: 4 }}>
-          Join Us
-        </Button>
-      </Grow>
-
-      <Grid container spacing={4} sx={{ mt: 4 }}>
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ p: 2 }}>
-            <Typography variant="h5" color="primary" gutterBottom>
-              Upcoming Events
-            </Typography>
-            <ul>
-              {upcomingEvents.map((event, index) => (
-                <li key={index}>
-                  <Typography variant="body1">
-                    <strong>{event.date}:</strong> {event.event}
-                  </Typography>
-                </li>
-              ))}
-            </ul>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <CalendarToday sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-            <Typography variant="h5" color="primary" gutterBottom>
-              Club Activities
-            </Typography>
-            <Typography variant="body1" color="textSecondary">
-              Join us for weekly sessions on programming, cybersecurity, and collaborative projects.
-              Participate in hackathons, coding challenges, and more!
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={4} sx={{ mt: 4 }}>
-        <Grid item xs={12} sm={4}>
-          <img
-            src="/images/room.jpg"
-            alt="Club Room"
-            style={{ width: '100%', borderRadius: '8px' }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <img
-            src="https://via.placeholder.com/300x200"
-            alt="Activity 2"
-            style={{ width: '100%', borderRadius: '8px' }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <img
-            src="https://via.placeholder.com/300x200"
-            alt="Activity 3"
-            style={{ width: '100%', borderRadius: '8px' }}
-          />
-        </Grid>
-      </Grid>
-    </Container>
+        >
+          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+          The Computer Science and Cybersecurity Club
+          </Typography>
+          <Typography variant="h6" sx={{ color: 'white', maxWidth: '800px', mt: 2 }}>
+          The Computer Science and Cybersecurity Club (CS&&CS) is for all technology-curious students who want to take their interest in computers further or learn the foundations of cybersecurity. We a variety of projects they can all work on and learn from.
+          </Typography>
+        </Box>
+        
+        {/* Categories Section */}
+        <Container maxWidth="lg" sx={{ mt: -10, pb: 6 }}>
+          <Grid container spacing={4}>
+            {['Coding', 'Machine Learning', 'Hacking'].map((category, index) => (
+              <Grid item xs={12} sm={4} key={index}>
+                <Card sx={{ position: 'relative', borderRadius: '10px', overflow: 'hidden' }}>
+                  <CardActionArea>
+                    <Box
+                      component="img"
+                      src={index === 0 ? "/images/code.gif" : index === 1 ? "/images/machinelearning.gif" : "/images/cyberhack.gif"} // Placeholder image
+                      alt={category}
+                      sx={{ width: '100%', height: '250px', objectFit: 'cover' }}
+                    />
+                    <CardContent
+                      sx={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        width: '100%',
+                        background: 'rgba(0,0,0,0.6)',
+                        color: 'white',
+                        padding: '10px',
+                      }}
+                    >
+                      <Typography variant="h6">{category} →</Typography> {index === 0 ? (<Typography variant='body2' sx={{ position: 'absolute', bottom: '10px', left: '10px', color: 'white', fontWeight: 'bold' }}></Typography>) : null}
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+    </ThemeProvider>
   );
 }
 
-export default Home;
+export default HomePage;

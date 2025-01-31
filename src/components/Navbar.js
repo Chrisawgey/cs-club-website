@@ -11,18 +11,30 @@ function Navbar() {
   };
 
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: 'white', boxShadow: 'none', borderBottom: '2px solid #ddd' }}>
-      <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+    <AppBar
+      sx={{
+        backgroundColor: 'white',
+        boxShadow: 'none',
+        borderBottom: '2px solid #ddd',
+        position: { xs: "fixed", md: "sticky" }, // Fixed on mobile, sticky on larger screens
+        top: 0,
+        zIndex: 1100, // Ensures it's always above other content
+      }}
+    >
+      <Toolbar sx={{ justifyContent: "space-between", alignItems: "center", px: 2 }}>
         
-        {/* Logo */}
+        {/* Logo - Adjusted size for mobile */}
         <Box component={Link} to="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
           <Box
             component="img"
             src="/images/uccowl.jpeg"
             alt="UCNJ CS Club Logo"
-            sx={{ height: 50, mr: 2 }}
+            sx={{
+              height: { xs: 40, sm: 50 }, // Smaller logo on mobile
+              mr: 2
+            }}
           />
-          <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black', fontSize: { xs: "1rem", sm: "1.2rem" } }}>
             UCNJ CS & CybSEC
           </Typography>
         </Box>
@@ -58,13 +70,12 @@ function Navbar() {
             ))}
           </List>
         </Drawer>
-
       </Toolbar>
     </AppBar>
   );
 }
 
-// Custom Nav Button Component with Gradient Hover Effect
+// Custom Nav Button Component with Gradient Hover Underline Effect
 function NavButton({ to, children }) {
   return (
     <Button
@@ -89,6 +100,9 @@ function NavButton({ to, children }) {
         },
         '&:hover::after': {
           opacity: 1,
+        },
+        '&:hover': {
+          color: '#ff6600',
         },
       }}
     >

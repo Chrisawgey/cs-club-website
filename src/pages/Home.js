@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container, Typography, Box, Grid, Card, CardActionArea, CardContent, Button } from '@mui/material';
+import { Container, Typography, Box, Grid, Card, CardActionArea, CardContent, Button, IconButton } from '@mui/material';
+import { LinkedIn, Facebook, Twitter } from '@mui/icons-material'; // Import icons
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
@@ -48,7 +49,7 @@ function HomePage() {
           </Typography>
         </Box>
 
-        {/* Categories Section (Unchanged) */}
+        {/* Categories Section */}
         <Container maxWidth="lg" sx={{ mt: -10, pb: 6 }}>
           <Grid container spacing={4}>
             {['Coding', 'Machine Learning', 'Hacking'].map((category, index) => (
@@ -81,15 +82,15 @@ function HomePage() {
           </Grid>
 
           {/* Join Now Button */}
-          <Box sx={{ textAlign: 'center', mt: 8 }}>
+          <Box sx={{ textAlign: 'center', mt: 10 }}>
             <Button variant="contained" color="primary" size="large" href="#" sx={{ fontSize: '1.2rem', fontWeight: 'bold', padding: '12px 20px' }}>
               Join Now
             </Button>
           </Box>
         </Container>
 
-        {/* Upcoming Events Section (Fixed Layout) */}
-        <Container maxWidth="lg" sx={{ mt: 6 }}>
+        {/* Upcoming Events Section */}
+        <Container maxWidth="lg" sx={{ mt: 2 }}>
           <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
             Upcoming Events
           </Typography>
@@ -121,9 +122,25 @@ function HomePage() {
           </Grid>
         </Container>
 
+        {/* Footer Section */}
+        <Box sx={{ mt: 10 }}>
+          <Box sx={{ height: '6px', background: 'linear-gradient(to right, #ff00ff, #ff6600, #ffcc00)' }} />
+          <Box sx={{ backgroundImage: 'url(/images/MIT_EECS_pattern-repeat_black_000000.svg)', backgroundColor: 'black', color: 'white', py: 6, px: 4, textAlign: 'center' }}>
+            <Container maxWidth="lg">
+              <Grid container spacing={4} justifyContent="center">
+                <Grid item xs={12} sm={4}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>UCNJ Computer Science & Cybersecurity Club</Typography>
+                  <Typography variant="body2">1033 Springfield Ave.</Typography>
+                  <Typography variant="body2">Inovation Center</Typography>
+                  <Typography variant="body2">Cranford, NJ 07016</Typography>
+                </Grid>
+              </Grid>
+              <Typography variant="body2" sx={{ mt: 4 }}>© 2025 Union College of Union County</Typography>
+            </Container>
+          </Box>
+        </Box>
       </Box>
     </ThemeProvider>
-    
   );
 }
 

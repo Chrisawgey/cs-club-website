@@ -7,6 +7,8 @@ import ClubChat from './pages/ClubChat';
 import Gallery from './pages/Gallery';
 import AboutUs from './pages/AboutUs';
 import Projects from './pages/Projects';
+import AdminLogin from './pages/AdminLogin';  // Added Admin Login Page
+import AdminDashboard from './pages/AdminDashboard';  // Added Admin Dashboard
 import theme from './theme';
 
 function App() {
@@ -21,6 +23,10 @@ function App() {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/projects" element={<Projects />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </Router>
     </ThemeProvider>

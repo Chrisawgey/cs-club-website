@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemText, keyframes } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Keyframes for the animated gradient
 const gradientAnimation = keyframes`
@@ -12,6 +12,19 @@ const gradientAnimation = keyframes`
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if the user is logged in as admin
+    setIsAdmin(localStorage.getItem('isAdmin') === 'true');
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAdmin');
+    setIsAdmin(false);
+    navigate('/'); // Redirect to home after logout
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -50,6 +63,16 @@ function Navbar() {
           <NavButton to="/club-chat">Club Chat Room</NavButton>
           <NavButton to="/gallery">Gallery</NavButton>
           <NavButton to="/about-us">About Us</NavButton>
+
+          {/* Admin Links */}
+          {isAdmin ? (
+            <>
+              <NavButton to="/admin">Admin Panel</NavButton>
+              <Button onClick={handleLogout} sx={{ fontWeight: 'bold', color: 'red' }}>Logout</Button>
+            </>
+          ) : (
+            <NavButton to="/admin-login">Admin Login</NavButton>
+          )}
         </Box>
 
         {/* Mobile Menu Button */}
@@ -98,7 +121,7 @@ function Navbar() {
                   '&:active': {
                     background: 'linear-gradient(270deg, #222222, #ffffff)',
                   },
-                  mb: 1 // Small margin between items
+                  mb: 1
                 }}
               >
                 <ListItemText 
@@ -106,12 +129,28 @@ function Navbar() {
                   primaryTypographyProps={{
                     fontSize: '1.1rem',
                     fontWeight: 'bold',
-                    color: 'black', // Ensuring visibility on gradient
+                    color: 'black',
                     textAlign: 'center'
                   }} 
                 />
               </ListItem>
             ))}
+
+            {/* Admin Links (Mobile) */}
+            {isAdmin ? (
+              <>
+                <ListItem button component={Link} to="/admin" onClick={handleDrawerToggle}>
+                  <ListItemText primary="Admin Panel" primaryTypographyProps={{ fontWeight: 'bold', textAlign: 'center' }} />
+                </ListItem>
+                <ListItem button onClick={handleLogout}>
+                  <ListItemText primary="Logout" primaryTypographyProps={{ fontWeight: 'bold', textAlign: 'center', color: 'red' }} />
+                </ListItem>
+              </>
+            ) : (
+              <ListItem button component={Link} to="/admin-login" onClick={handleDrawerToggle}>
+                <ListItemText primary="Admin Login" primaryTypographyProps={{ fontWeight: 'bold', textAlign: 'center' }} />
+              </ListItem>
+            )}
           </List>
         </Drawer>
       </Toolbar>

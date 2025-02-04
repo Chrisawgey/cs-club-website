@@ -1,20 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, Grid, Card, CardActionArea, CardContent, Button } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-const events = [
-  { date: '30', month: 'Jan', day: 'Thursday', time: '9:30 am', title: 'IAP 2025: Expanding Horizons in Computing (Cryptography and Security Day)' },
-  { date: '31', month: 'Jan', day: 'Friday', time: '10:00 am', title: 'IAP 2025: Expanding Horizons in Computing (Quantum Computing Day)' },
-  { date: '03', month: 'Feb', day: 'Monday', time: '4:00 pm', title: 'NextGen Fellowship Program Info Session', subtitle: 'Information Session' },
-  { date: '04', month: 'Feb', day: 'Tuesday', time: '9:30 am', title: 'Doctoral Thesis: On the Learnability of General Reinforcement-learning Objectives', subtitle: 'Thesis Defense' }
-];
-
 function HomePage() {
+  const [events, setEvents] = useState(
+    JSON.parse(localStorage.getItem('events')) || [
+      { date: '30', month: 'Jan', day: 'Thursday', time: '9:30 am', title: 'Cryptography and Security Day', subtitle: 'Cybersecurity Event' },
+      { date: '31', month: 'Jan', day: 'Friday', time: '10:00 am', title: 'Quantum Computing Day', subtitle: 'Tech Talk' },
+      { date: '03', month: 'Feb', day: 'Monday', time: '4:00 pm', title: 'NextGen Fellowship Program Info', subtitle: 'Information Session' },
+      { date: '04', month: 'Feb', day: 'Tuesday', time: '9:30 am', title: 'Doctoral Thesis: On the Learnability of General Reinforcement-learning Objectives', subtitle: 'Thesis Defense' }
+    ]
+  );
+
+  useEffect(() => {
+    const storedEvents = JSON.parse(localStorage.getItem('events'));
+    if (storedEvents) {
+      setEvents(storedEvents);
+    }
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
-      {/* Add top padding to prevent navbar overlap on mobile */}
       <Box sx={{ pt: { xs: 7, md: 0 } }}>
         <style>
           {`
@@ -29,7 +37,7 @@ function HomePage() {
         {/* Hero Section */}
         <Box
           sx={{
-            height: { xs: '40vh', md: '50vh' }, // Adjusted height for mobile
+            height: { xs: '40vh', md: '50vh' },
             backgroundImage: 'linear-gradient(90deg, blue, purple, red, pink), url(/images/MIT_EECS_pattern-repeat_black_000000.svg)',
             backgroundSize: '200% 200%',
             animation: 'moveColors 10s linear infinite',
@@ -38,10 +46,9 @@ function HomePage() {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            p: { xs: 2, md: 4 }, // Adjusted padding for mobile
+            p: { xs: 2, md: 4 },
           }}
         >
-          {/* Adjusted font sizes for mobile */}
           <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white', fontSize: { xs: '1.8rem', md: '2.5rem' } }}>
             The Computer Science and Cybersecurity Club
           </Typography>
@@ -51,7 +58,7 @@ function HomePage() {
         </Box>
 
         {/* Categories Section */}
-        <Container maxWidth="lg" sx={{ mt: { xs: -8, md: -10 }, pb: 6 }}> {/* Adjusted margin for mobile */}
+        <Container maxWidth="lg" sx={{ mt: { xs: -8, md: -10 }, pb: 6 }}>
           <Grid container spacing={4}>
             {['Coding', 'Machine Learning', 'Hacking'].map((category, index) => (
               <Grid item xs={12} sm={4} key={index}>
@@ -74,7 +81,7 @@ function HomePage() {
                         padding: '10px',
                       }}
                     >
-                      <Typography variant="h6">{category} →</Typography>
+                      <Typography variant="h6">{category} ✅</Typography>
                     </CardContent>
                   </CardActionArea>
                 </Card>
@@ -83,8 +90,15 @@ function HomePage() {
           </Grid>
 
           {/* Join Now Button */}
-          <Box sx={{ textAlign: 'center', mt: { xs: 6, md: 10 } }}> {/* Adjusted margin for mobile */}
-            <Button variant="contained" color="primary" size="large" href="#" sx={{ fontSize: '1.2rem', fontWeight: 'bold', padding: '12px 20px' }}>
+          <Box sx={{ textAlign: 'center', mt: { xs: 6, md: 10 } }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="large" 
+              href="https://owlsspace.ucc.edu/organization/cs2cs"
+              target="_blank"
+              sx={{ fontSize: '1.2rem', fontWeight: 'bold', padding: '12px 20px' }}
+            >
               Join Now
             </Button>
           </Box>

@@ -12,7 +12,7 @@ const images = [
 
 function Gallery() {
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4, pt: { xs: 8, sm: 4 } }}>
       <Typography variant="h4" gutterBottom>
         Gallery
       </Typography>

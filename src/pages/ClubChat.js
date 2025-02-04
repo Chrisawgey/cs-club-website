@@ -109,7 +109,7 @@ function ClubChat() {
   }, [user]);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4, px: { xs: 2, sm: 4 } }}>
+    <Container maxWidth="lg" sx={{ py: 4, px: { xs: 2, sm: 4 }, pt: { xs: 8, sm: 4 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 }, borderRadius: '12px', backgroundColor: '#f5f5f5' }}>
         {!user ? (
           <Box textAlign="center">

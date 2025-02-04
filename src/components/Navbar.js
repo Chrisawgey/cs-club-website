@@ -22,8 +22,7 @@ function Navbar() {
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between", alignItems: "center", px: 2 }}>
-        
-        {/* Logo - Adjusted size for mobile */}
+        {/* Logo */}
         <Box component={Link} to="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
           <Box
             component="img"
@@ -41,7 +40,7 @@ function Navbar() {
 
         {/* Desktop Menu */}
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
-          <NavButton to="/club-chat">Club Chat Room</NavButton>
+          <NavButton to="/club-chat">Club Chat Room</NavButton> {/* Updated to match route */}
           <NavButton to="/gallery">Gallery</NavButton>
           <NavButton to="/about-us">About Us</NavButton>
         </Box>
@@ -64,7 +63,13 @@ function Navbar() {
         >
           <List sx={{ width: 250 }}>
             {['Club Chat Room', 'Gallery', 'About Us'].map((text, index) => (
-              <ListItem button key={index} component={Link} to={text.toLowerCase().replace(/ /g, '-')}>
+              <ListItem 
+                button 
+                key={index} 
+                component={Link} 
+                to={text === 'Club Chat Room' ? '/club-chat' : `/${text.toLowerCase().replace(/ /g, '-')}`} // Updated to match route
+                onClick={handleDrawerToggle} // Close drawer on link click
+              >
                 <ListItemText primary={text} />
               </ListItem>
             ))}
@@ -75,7 +80,7 @@ function Navbar() {
   );
 }
 
-// Custom Nav Button Component with Gradient Hover Underline Effect
+// Custom Nav Button Component
 function NavButton({ to, children }) {
   return (
     <Button

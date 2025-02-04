@@ -3,7 +3,7 @@ import { Container, Typography, Box, Fade, Grow } from '@mui/material';
 
 function AboutUs() {
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: 4, pt: { xs: 8, sm: 4 } }}>
       <Fade in={true} timeout={800}>
         <Typography variant="h4" gutterBottom>
           About Us

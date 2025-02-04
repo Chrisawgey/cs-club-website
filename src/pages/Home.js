@@ -1,6 +1,5 @@
 import React from 'react';
-import { Container, Typography, Box, Grid, Card, CardActionArea, CardContent, Button, IconButton } from '@mui/material';
-import { LinkedIn, Facebook, Twitter } from '@mui/icons-material'; // Import icons
+import { Container, Typography, Box, Grid, Card, CardActionArea, CardContent, Button } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
@@ -15,7 +14,8 @@ const events = [
 function HomePage() {
   return (
     <ThemeProvider theme={theme}>
-      <Box>
+      {/* Add top padding to prevent navbar overlap on mobile */}
+      <Box sx={{ pt: { xs: 7, md: 0 } }}>
         <style>
           {`
             @keyframes moveColors {
@@ -29,7 +29,7 @@ function HomePage() {
         {/* Hero Section */}
         <Box
           sx={{
-            height: '50vh',
+            height: { xs: '40vh', md: '50vh' }, // Adjusted height for mobile
             backgroundImage: 'linear-gradient(90deg, blue, purple, red, pink), url(/images/MIT_EECS_pattern-repeat_black_000000.svg)',
             backgroundSize: '200% 200%',
             animation: 'moveColors 10s linear infinite',
@@ -38,19 +38,20 @@ function HomePage() {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            p: 4,
+            p: { xs: 2, md: 4 }, // Adjusted padding for mobile
           }}
         >
-          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+          {/* Adjusted font sizes for mobile */}
+          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white', fontSize: { xs: '1.8rem', md: '2.5rem' } }}>
             The Computer Science and Cybersecurity Club
           </Typography>
-          <Typography variant="h6" sx={{ color: 'white', maxWidth: '800px', mt: 2 }}>
+          <Typography variant="h6" sx={{ color: 'white', maxWidth: '800px', mt: 2, fontSize: { xs: '1rem', md: '1.25rem' } }}>
             The Computer Science and Cybersecurity Club (CS&&CS) is for all technology-curious students who want to take their interest in computers further or learn the foundations of cybersecurity. We have a variety of projects they can all work on and learn from.
           </Typography>
         </Box>
 
         {/* Categories Section */}
-        <Container maxWidth="lg" sx={{ mt: -10, pb: 6 }}>
+        <Container maxWidth="lg" sx={{ mt: { xs: -8, md: -10 }, pb: 6 }}> {/* Adjusted margin for mobile */}
           <Grid container spacing={4}>
             {['Coding', 'Machine Learning', 'Hacking'].map((category, index) => (
               <Grid item xs={12} sm={4} key={index}>
@@ -82,7 +83,7 @@ function HomePage() {
           </Grid>
 
           {/* Join Now Button */}
-          <Box sx={{ textAlign: 'center', mt: 10 }}>
+          <Box sx={{ textAlign: 'center', mt: { xs: 6, md: 10 } }}> {/* Adjusted margin for mobile */}
             <Button variant="contained" color="primary" size="large" href="#" sx={{ fontSize: '1.2rem', fontWeight: 'bold', padding: '12px 20px' }}>
               Join Now
             </Button>
@@ -91,7 +92,7 @@ function HomePage() {
 
         {/* Upcoming Events Section */}
         <Container maxWidth="lg" sx={{ mt: 2 }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, fontSize: { xs: '1.5rem', md: '2rem' } }}> {/* Adjusted font size for mobile */}
             Upcoming Events
           </Typography>
 
@@ -100,20 +101,20 @@ function HomePage() {
               <Grid item xs={12} sm={6} key={index}>
                 <Card sx={{ border: '2px solid #6A0DAD', borderRadius: '8px', p: 2, height: '100%' }}>
                   <Box display="flex" alignItems="flex-start">
-                    <Typography variant="h3" sx={{ color: '#C2185B', fontWeight: 'bold', mr: 1 }}>
+                    <Typography variant="h3" sx={{ color: '#C2185B', fontWeight: 'bold', mr: 1, fontSize: { xs: '2rem', md: '3rem' } }}> {/* Adjusted font size for mobile */}
                       {event.date}
                     </Typography>
                     <Box>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{event.month}</Typography>
-                      <Typography variant="body2" sx={{ color: 'gray' }}>{event.day}, {event.time}</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: { xs: '1rem', md: '1.25rem' } }}>{event.month}</Typography> {/* Adjusted font size for mobile */}
+                      <Typography variant="body2" sx={{ color: 'gray', fontSize: { xs: '0.875rem', md: '1rem' } }}>{event.day}, {event.time}</Typography> {/* Adjusted font size for mobile */}
                     </Box>
                   </Box>
                   {event.subtitle && (
-                    <Typography variant="body2" sx={{ color: 'gray', fontWeight: 'bold', mt: 1 }}>
+                    <Typography variant="body2" sx={{ color: 'gray', fontWeight: 'bold', mt: 1, fontSize: { xs: '0.875rem', md: '1rem' } }}> {/* Adjusted font size for mobile */}
                       {event.subtitle}
                     </Typography>
                   )}
-                  <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#1A237E', mt: 1 }}>
+                  <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#1A237E', mt: 1, fontSize: { xs: '1rem', md: '1.25rem' } }}> {/* Adjusted font size for mobile */}
                     {event.title}
                   </Typography>
                 </Card>
@@ -129,13 +130,13 @@ function HomePage() {
             <Container maxWidth="lg">
               <Grid container spacing={4} justifyContent="center">
                 <Grid item xs={12} sm={4}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>UCNJ Computer Science & Cybersecurity Club</Typography>
-                  <Typography variant="body2">1033 Springfield Ave.</Typography>
-                  <Typography variant="body2">Inovation Center</Typography>
-                  <Typography variant="body2">Cranford, NJ 07016</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: { xs: '1rem', md: '1.25rem' } }}>UCNJ Computer Science & Cybersecurity Club</Typography> {/* Adjusted font size for mobile */}
+                  <Typography variant="body2" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>1033 Springfield Ave.</Typography> {/* Adjusted font size for mobile */}
+                  <Typography variant="body2" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>Inovation Center</Typography> {/* Adjusted font size for mobile */}
+                  <Typography variant="body2" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>Cranford, NJ 07016</Typography> {/* Adjusted font size for mobile */}
                 </Grid>
               </Grid>
-              <Typography variant="body2" sx={{ mt: 4 }}>© 2025 Union College of Union County</Typography>
+              <Typography variant="body2" sx={{ mt: 4, fontSize: { xs: '0.875rem', md: '1rem' } }}>© 2025 Union College of Union County</Typography> {/* Adjusted font size for mobile */}
             </Container>
           </Box>
         </Box>

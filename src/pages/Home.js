@@ -7,10 +7,10 @@ const theme = createTheme();
 function HomePage() {
   const [events, setEvents] = useState(
     JSON.parse(localStorage.getItem('events')) || [
-      { date: '30', month: 'Jan', day: 'Thursday', time: '9:30 am', title: 'Cryptography and Security Day', subtitle: 'Cybersecurity Event' },
-      { date: '31', month: 'Jan', day: 'Friday', time: '10:00 am', title: 'Quantum Computing Day', subtitle: 'Tech Talk' },
-      { date: '03', month: 'Feb', day: 'Monday', time: '4:00 pm', title: 'NextGen Fellowship Program Info', subtitle: 'Information Session' },
-      { date: '04', month: 'Feb', day: 'Tuesday', time: '9:30 am', title: 'Doctoral Thesis: On the Learnability of General Reinforcement-learning Objectives', subtitle: 'Thesis Defense' }
+      { date: '11', month: 'Feb', day: 'Tuesday', time: '2:00 pm', title: 'Kali Linux 101 - Steven Linares', subtitle: 'Information Session & Hands on' },
+      { date: '18', month: 'Feb', day: 'Tuesday', time: '2:00 pm', title: 'A.I Law Ethics - Former Ai Lawyer', subtitle: 'Tech Talk' },
+      { date: '25', month: 'Feb', day: 'Tuesday', time: '2:00 pm', title: 'Boost your LinkedIn & Increase Internship Opportunities - Christopher Vargas', subtitle: 'Information Session' },
+      { date: '04', month: 'Mar', day: 'Tuesday', time: '2:00 pm', title: 'Open Slot', subtitle: 'N/A' }
     ]
   );
 

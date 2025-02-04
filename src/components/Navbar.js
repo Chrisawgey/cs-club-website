@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemText } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemText, keyframes } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
+
+// Keyframes for the animated gradient
+const gradientAnimation = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -16,9 +23,9 @@ function Navbar() {
         backgroundColor: 'white',
         boxShadow: 'none',
         borderBottom: '2px solid #ddd',
-        position: { xs: "fixed", md: "sticky" }, // Fixed on mobile, sticky on larger screens
+        position: { xs: "fixed", md: "sticky" },
         top: 0,
-        zIndex: 1100, // Ensures it's always above other content
+        zIndex: 1100,
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between", alignItems: "center", px: 2 }}>
@@ -29,7 +36,7 @@ function Navbar() {
             src="/images/uccowl.jpeg"
             alt="UCNJ CS Club Logo"
             sx={{
-              height: { xs: 40, sm: 50 }, // Smaller logo on mobile
+              height: { xs: 40, sm: 50 },
               mr: 2
             }}
           />
@@ -40,7 +47,7 @@ function Navbar() {
 
         {/* Desktop Menu */}
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
-          <NavButton to="/club-chat">Club Chat Room</NavButton> {/* Updated to match route */}
+          <NavButton to="/club-chat">Club Chat Room</NavButton>
           <NavButton to="/gallery">Gallery</NavButton>
           <NavButton to="/about-us">About Us</NavButton>
         </Box>
@@ -59,18 +66,50 @@ function Navbar() {
           anchor="right"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          sx={{ display: { xs: 'block', md: 'none' } }}
+          sx={{ 
+            display: { xs: 'block', md: 'none' }, 
+            '& .MuiDrawer-paper': { 
+              background: 'white', 
+              width: 260, 
+              padding: '20px 10px' 
+            } 
+          }}
         >
-          <List sx={{ width: 250 }}>
+          <List>
             {['Club Chat Room', 'Gallery', 'About Us'].map((text, index) => (
               <ListItem 
                 button 
                 key={index} 
                 component={Link} 
-                to={text === 'Club Chat Room' ? '/club-chat' : `/${text.toLowerCase().replace(/ /g, '-')}`} // Updated to match route
-                onClick={handleDrawerToggle} // Close drawer on link click
+                to={text === 'Club Chat Room' ? '/club-chat' : `/${text.toLowerCase().replace(/ /g, '-')}`} 
+                onClick={handleDrawerToggle}
+                sx={{
+                  padding: '14px 20px',
+                  borderRadius: '8px',
+                  transition: 'background 0.3s ease-in-out',
+                  background: 'linear-gradient(270deg, #333333, #ffffff)',
+                  backgroundSize: '400% 400%',
+                  animation: `${gradientAnimation} 4s infinite`,
+                  '&:hover': {
+                    background: 'linear-gradient(270deg, #444444, #ffffff)',
+                    backgroundSize: '400% 400%',
+                    animation: `${gradientAnimation} 2s infinite`,
+                  },
+                  '&:active': {
+                    background: 'linear-gradient(270deg, #222222, #ffffff)',
+                  },
+                  mb: 1 // Small margin between items
+                }}
               >
-                <ListItemText primary={text} />
+                <ListItemText 
+                  primary={text} 
+                  primaryTypographyProps={{
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    color: 'black', // Ensuring visibility on gradient
+                    textAlign: 'center'
+                  }} 
+                />
               </ListItem>
             ))}
           </List>

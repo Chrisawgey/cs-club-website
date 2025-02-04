@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, Grid, Card, CardActionArea, CardContent, Button } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { db } from '../firebaseConfig';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 
 const theme = createTheme();
 
 function HomePage() {
-  const [events, setEvents] = useState(
-    JSON.parse(localStorage.getItem('events')) || [
-      { date: '11', month: 'Feb', day: 'Tuesday', time: '2:00 pm', title: 'Kali Linux 101 - Steven Linares', subtitle: 'Information Session & Hands on' },
-      { date: '18', month: 'Feb', day: 'Tuesday', time: '2:00 pm', title: 'A.I Law Ethics - Former Ai Lawyer', subtitle: 'Tech Talk' },
-      { date: '25', month: 'Feb', day: 'Tuesday', time: '2:00 pm', title: 'Boost your LinkedIn & Increase Internship Opportunities - Christopher Vargas', subtitle: 'Information Session & Hands On' },
-      { date: '04', month: 'Mar', day: 'Tuesday', time: '2:00 pm', title: 'Open Slot', subtitle: 'N/A' }
-    ]
-  );
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    const storedEvents = JSON.parse(localStorage.getItem('events'));
-    if (storedEvents) {
-      setEvents(storedEvents);
-    }
+    // Fetch only the latest 4 events
+    const q = query(collection(db, 'events'), orderBy('date'), limit(4));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedEvents = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setEvents(fetchedEvents);
+    });
+
+    return () => unsubscribe(); // Cleanup on unmount
   }, []);
 
   return (

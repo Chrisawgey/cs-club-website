@@ -1,41 +1,88 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Typography, Paper, Box, Button, Avatar, TextField, Grid } from '@mui/material';
-import { GoogleAuthProvider, signInWithPopup, getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import LogoutIcon from '@mui/icons-material/Logout';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Container,
+  Typography,
+  Paper,
+  Box,
+  Button,
+  Avatar,
+  TextField,
+  Grid,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
+import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db, auth } from "../firebaseConfig"; // Import shared Firebase config
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import LogoutIcon from "@mui/icons-material/Logout";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAtUFRFozm_qnEsPM0dXmeZ-La6WavLsuU",
-  authDomain: "cschatroom-61048.firebaseapp.com",
-  projectId: "cschatroom-61048",
-  storageBucket: "cschatroom-61048.appspot.com",
-  messagingSenderId: "244983335090",
-  appId: "1:244983335090:web:d1e5a0eaa55849a82f61ab",
-  measurementId: "G-6R8049MQK8",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-const badWords = ["badword1", "badword2", "badword3"]; // Replace with actual bad words.
+const badWords = [
+  "fuck", "shit", "bitch", "cunt", "asshole", "bastard", "dick", "cock", "pussy",
+  "whore", "slut", "nigger", "faggot", "chink", "spic", "kike", "gook", "wetback",
+  "retard", "tranny", "dyke", "hoe", "dumbass", "jackass", "motherfucker", "son of a bitch",
+  "twat", "wanker", "bollocks", "arsehole", "nonce", "slag", "tosser", "prick",
+  "bloody", "bugger", "damn", "jerkoff", "sodomite", "homophobe", "pedophile",
+  "rapist", "terrorist", "nazi", "hitler", "isis", "jihad", "zionist", "negro", "coon",
+  "beaner", "camel jockey", "sand nigger", "gypsy", "cracker", "honky", "redneck", "white trash",
+  "uncle tom", "oreogate", "banana", "house negro", "house nigger", "coonass",
+  "wetback", "half breed", "mongoloid", "spook", "chinaman", "towelhead", "raghead",
+  "jigaboo", "tar baby", "burrhead", "pickaninny", "darkie", "moon cricket", "mud person",
+  "ape", "monkey", "jungle bunny", "ghetto", "fudge packer", "carpet muncher", "fag", "queer",
+  "dyke", "tranny", "she male", "ladyboy", "drag queen", "fairy", "fruit", "sissy",
+  "girly boy", "nancy boy", "shemale", "pillow biter", "bone smuggler", "butt pirate",
+  "circle jerker", "cock jockey", "dong sucker", "cornholer", "cum guzzler", "knob gobbler",
+  "flamer", "gaywad", "poof", "poofter", "tinkerbell", "twinkle toes", "rump ranger",
+  "rump wrangler", "sausage jockey", "willy woofter", "yid", "kike", "hebe", "jewboy",
+  "christ killer", "sheenie", "shylock", "shyster", "islamist", "raghead", "towel head",
+  "sand monkey", "infidel", "muzzie", "hajji", "pig", "swine", "gringo", "gabacho",
+  "bean eater", "spic", "spick", "wetback", "greaser", "cholo", "mick", "paddy", "fenians",
+  "limey", "pommy", "kraut", "boche", "jerry", "fritz", "hun", "nazi", "goose stepper",
+  "wop", "dago", "guido", "ginzo", "eyetie", "chink", "chinaman", "zipperhead", "gook",
+  "slant eye", "slope", "yellow peril", "yank", "seppo", "coon", "darky", "niglet",
+  "shitskin", "jiggaboo", "jiggaboos", "house negro", "field negro", "bluegum",
+  "jungle bunny", "booger eater", "mudshark", "race traitor", "white devil", "cracker",
+  "honky", "hillbilly", "peckerwood", "redneck", "trailer trash", "white trash",
+  "wasp", "hick", "yokel", "gubba", "toerag", "scouser", "gypsy", "pikey", "tinker",
+  "gorgio", "yob", "yobbo", "lad", "hooligan", "lout", "thug", "golliwog", "poppycock",
+  "coochie", "cooter", "nut sack", "schlong", "dildo", "tit", "boob", "knockers",
+  "jugs", "tits", "nipple", "nips", "camel toe", "muff", "cooch", "poon", "twat",
+  "minge", "clunge", "gash", "beaver", "shag", "screwed", "bugger", "blow job",
+  "hand job", "rim job", "buttsex", "orgy", "gangbang", "bukkake", "fisting", "felching",
+  "snowballing", "cuckold", "cuck", "incel", "simp", "thot", "e-girl", "onlyfans",
+  "sugar daddy", "sugar baby", "stripper", "escort", "hooker", "prostitute",
+  "streetwalker", "john", "pimp", "trick", "moll", "madam", "whoremaster", "fuckboy",
+  "fuckgirl", "slut shaming", "prude", "frigid", "gold digger", "cougar", "milf",
+  "gilf", "dilf", "stepmom", "stepsis", "stepbro", "cunnilingus", "fellatio",
+  "sixty nine", "doggy style", "cowgirl", "reverse cowgirl", "missionary",
+  "anal", "threesome", "foursome", "gangbang", "double penetration", "deepthroat",
+  "handcuff", "dominatrix", "submissive", "sadomasochism", "bdsm", "bondage",
+  "fetish", "foot fetish", "pee fetish", "scat fetish", "vore", "necro", "necrophilia",
+  "pedophilia", "zoophilia", "bestiality", "beastiality", "inflation fetish",
+  "giantess fetish", "vore fetish", "cuckolding", "blackmail", "revenge porn",
+  "gore", "snuff", "murder porn", "rape fantasy", "noncon", "dubcon", "ageplay",
+  "daddy dom", "mommy dom", "sissy", "femdom", "maledom", "erotic asphyxiation"
+];
 
 function ClubChat() {
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
+  const [showBadWordAlert, setShowBadWordAlert] = useState(false); // State for bad word alert
+  const messagesEndRef = useRef(null); // Ref for auto-scrolling
+
+  // Auto-scroll to the latest message
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-      } else {
-        setUser(null);
-      }
-    }, (error) => {
-      console.error("Error in onAuthStateChanged:", error);
+      setUser(currentUser || null);
     });
     return () => unsubscribe();
   }, []);
@@ -44,13 +91,8 @@ function ClubChat() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      if (result.user) {
-        setUser(result.user);
-      } else {
-        console.error("No user returned from sign-in.");
-      }
+      setUser(result.user);
     } catch (error) {
-      console.error('Error during sign-in:', error.message);
       alert("Failed to sign in. Please try again.");
     }
   };
@@ -60,150 +102,189 @@ function ClubChat() {
       await signOut(auth);
       setUser(null);
     } catch (error) {
-      console.error('Error during sign-out:', error.message);
-      alert("Failed to sign out. Please try again.");
+      alert("Failed to sign out.");
     }
   };
 
-  const fetchMessages = () => {
-    const q = query(collection(db, 'messages'), orderBy('timestamp'));
-    onSnapshot(q, (snapshot) => {
-      const fetchedMessages = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setMessages(fetchedMessages);
-    });
-  };
+  useEffect(() => {
+    if (user) {
+      const q = query(collection(db, "messages"), orderBy("timestamp"));
+      return onSnapshot(q, (snapshot) => {
+        setMessages(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      });
+    }
+  }, [user]);
 
   const sendMessage = async () => {
     if (!user || !newMessage.trim()) return;
-
-    // Check for bad words
-    const containsBadWord = badWords.some((word) =>
-      newMessage.toLowerCase().includes(word)
-    );
-
+    const containsBadWord = badWords.some((word) => newMessage.toLowerCase().includes(word));
     if (containsBadWord) {
-      alert("Your message contains inappropriate language. Please modify it.");
-      setNewMessage('');
+      setShowBadWordAlert(true); // Show red caution box
+      setNewMessage("");
       return;
     }
 
     try {
-      await addDoc(collection(db, 'messages'), {
+      await addDoc(collection(db, "messages"), {
         text: newMessage,
         timestamp: new Date(),
-        user: user.displayName || 'Anonymous',
-        avatar: user.photoURL || '',
+        user: user.displayName || "Anonymous",
+        avatar: user.photoURL || "",
       });
-      setNewMessage('');
+      setNewMessage("");
     } catch (error) {
-      console.error('Error sending message:', error);
+      alert("Error sending message.");
     }
   };
 
-  useEffect(() => {
-    if (user) fetchMessages();
-  }, [user]);
-
-  useEffect(() => {
-    console.log("Current user:", user);
-  }, [user]);
-
   return (
-    <Container maxWidth="lg" sx={{ py: 4, px: { xs: 2, sm: 4 }, pt: { xs: 8, sm: 4 } }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 }, borderRadius: '12px', backgroundColor: '#f5f5f5' }}>
+    <Container maxWidth="lg" sx={{ py: 4, pt: { xs: 8, sm: 4 } }}>
+      <Paper
+        elevation={3}
+        sx={{
+          borderRadius: "12px",
+          overflow: "hidden",
+          height: "80vh",
+          display: "flex",
+          flexDirection: "column",
+          background: "linear-gradient(145deg, #f5f5f5, #e0e0e0)",
+        }}
+      >
         {!user ? (
-          <Box textAlign="center">
-            <ChatBubbleOutlineIcon sx={{ fontSize: { xs: 40, sm: 50 }, color: '#3f51b5', mb: 2 }} />
-            <Typography variant="h5" gutterBottom color="primary" fontSize={{ xs: '1.5rem', sm: '2rem' }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              p: 4,
+            }}
+          >
+            <ChatBubbleOutlineIcon sx={{ fontSize: 50, color: "#3f51b5", mb: 2 }} />
+            <Typography variant="h5" gutterBottom>
               Welcome to the Club Chat Room
             </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              sx={{ mt: 2, width: { xs: '100%', sm: 'auto' } }}
-              onClick={signInWithGoogle}
-            >
+            <Button variant="contained" onClick={signInWithGoogle}>
               Sign in with Google
             </Button>
           </Box>
         ) : (
-          <Box>
+          <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+            {/* Header */}
             <Box
-              display="flex"
-              flexDirection={{ xs: 'column', sm: 'row' }}
-              justifyContent="space-between"
-              alignItems="center"
-              mb={2}
-              sx={{ backgroundColor: '#3f51b5', color: '#fff', p: 2, borderRadius: '8px' }}
+              sx={{
+                p: 2,
+                backgroundColor: "#3f51b5",
+                color: "#fff",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
             >
-              <Typography variant="h4" fontSize={{ xs: '1.5rem', sm: '2rem' }}>Club Chat Room</Typography>
+              <Typography variant="h6">Club Chat Room</Typography>
               <Button
                 variant="contained"
                 color="secondary"
                 startIcon={<LogoutIcon />}
                 onClick={handleSignOut}
-                sx={{ backgroundColor: '#d32f2f', '&:hover': { backgroundColor: '#b71c1c' }, mt: { xs: 2, sm: 0 } }}
+                sx={{ backgroundColor: "#d32f2f", "&:hover": { backgroundColor: "#b71c1c" } }}
               >
                 Log Out
               </Button>
             </Box>
 
-            <Paper
-              elevation={1}
-              sx={{ p: 2, maxHeight: { xs: 300, sm: 400 }, overflowY: 'auto', mb: 3, borderRadius: '8px' }}
+            {/* Chat Messages */}
+            <Box
+              sx={{
+                flex: 1,
+                overflowY: "auto",
+                p: 2,
+                backgroundColor: "#fafafa",
+              }}
             >
               {messages.map((msg) => (
                 <Box
                   key={msg.id}
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
+                    display: "flex",
+                    alignItems: "center",
                     mb: 2,
-                    backgroundColor: '#e3f2fd',
-                    p: 2,
-                    borderRadius: '8px',
-                    flexDirection: { xs: 'column', sm: 'row' },
+                    flexDirection: msg.user === user.displayName ? "row-reverse" : "row",
                   }}
                 >
-                  <Avatar
-                    src={msg.avatar || '/default-avatar.png'}
-                    alt={msg.user}
-                    sx={{ mr: { sm: 2 }, mb: { xs: 1, sm: 0 }, width: 40, height: 40 }}
-                  />
-                  <Box textAlign={{ xs: 'center', sm: 'left' }}>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#1a237e' }}>
+                  <Avatar src={msg.avatar || "/default-avatar.png"} sx={{ mx: 2 }} />
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: "12px",
+                      backgroundColor: msg.user === user.displayName ? "#3f51b5" : "#e0e0e0",
+                      color: msg.user === user.displayName ? "#fff" : "#000",
+                      maxWidth: "70%",
+                    }}
+                  >
+                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                       {msg.user}
                     </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {msg.text}
-                    </Typography>
+                    <Typography variant="body2">{msg.text}</Typography>
                   </Box>
                 </Box>
               ))}
-            </Paper>
+              <div ref={messagesEndRef} /> {/* Auto-scroll anchor */}
+            </Box>
 
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Type your message..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      sendMessage();
-                    }
-                  }}
-                  sx={{ backgroundColor: '#fff', borderRadius: '8px' }}
-                />
+            {/* Message Input */}
+            <Box
+              sx={{
+                p: 2,
+                backgroundColor: "#fff",
+                borderTop: "1px solid #e0e0e0",
+              }}
+            >
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={10}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    placeholder="Type your message..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={sendMessage}
+                    sx={{ height: "56px" }}
+                  >
+                    Send
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
+            </Box>
           </Box>
         )}
       </Paper>
+
+      {/* Red Caution Box for Bad Words */}
+      <Snackbar
+        open={showBadWordAlert}
+        autoHideDuration={3000}
+        onClose={() => setShowBadWordAlert(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity="error" sx={{ width: "100%", borderRadius: "12px" }}>
+          ⚠️ No bad words allowed in chat!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

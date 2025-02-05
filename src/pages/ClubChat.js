@@ -68,8 +68,9 @@ function ClubChat() {
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [showBadWordAlert, setShowBadWordAlert] = useState(false); // State for bad word alert
-  const messagesEndRef = useRef(null); // Ref for auto-scrolling
+  const [showBadWordAlert, setShowBadWordAlert] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(true); // New disclaimer state
+  const messagesEndRef = useRef(null); // Auto-scroll ref
 
   // Auto-scroll to the latest message
   const scrollToBottom = () => {
@@ -119,7 +120,7 @@ function ClubChat() {
     if (!user || !newMessage.trim()) return;
     const containsBadWord = badWords.some((word) => newMessage.toLowerCase().includes(word));
     if (containsBadWord) {
-      setShowBadWordAlert(true); // Show red caution box
+      setShowBadWordAlert(true);
       setNewMessage("");
       return;
     }
@@ -150,7 +151,40 @@ function ClubChat() {
           background: "linear-gradient(145deg, #f5f5f5, #e0e0e0)",
         }}
       >
-        {!user ? (
+        {/* Disclaimer Screen */}
+        {showDisclaimer ? (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              textAlign: "center",
+              p: 4,
+            }}
+          >
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+              Welcome to the CS & Cybersecurity Club Chat! 💻
+            </Typography>
+            <Typography variant="body1" sx={{ maxWidth: "600px", mb: 3 }}>
+              This chat is a safe and welcoming space for discussions about computer science, cybersecurity, and club-related topics.  
+              Please be **respectful** to others, keep discussions appropriate, and avoid any offensive language.
+            </Typography>
+            <Typography variant="body2" color="error" sx={{ mb: 3 }}>
+              ⚠️ No hate speech, offensive words, or inappropriate behavior will be tolerated.
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              sx={{ fontSize: "1rem", fontWeight: "bold", px: 4 }}
+              onClick={() => setShowDisclaimer(false)}
+            >
+              Jump In 🚀
+            </Button>
+          </Box>
+        ) : !user ? (
           <Box
             sx={{
               display: "flex",
@@ -230,17 +264,11 @@ function ClubChat() {
                   </Box>
                 </Box>
               ))}
-              <div ref={messagesEndRef} /> {/* Auto-scroll anchor */}
+              <div ref={messagesEndRef} />
             </Box>
 
             {/* Message Input */}
-            <Box
-              sx={{
-                p: 2,
-                backgroundColor: "#fff",
-                borderTop: "1px solid #e0e0e0",
-              }}
-            >
+            <Box sx={{ p: 2, backgroundColor: "#fff", borderTop: "1px solid #e0e0e0" }}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={10}>
                   <TextField
@@ -258,13 +286,7 @@ function ClubChat() {
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    onClick={sendMessage}
-                    sx={{ height: "56px" }}
-                  >
+                  <Button fullWidth variant="contained" color="primary" onClick={sendMessage} sx={{ height: "56px" }}>
                     Send
                   </Button>
                 </Grid>
@@ -273,18 +295,6 @@ function ClubChat() {
           </Box>
         )}
       </Paper>
-
-      {/* Red Caution Box for Bad Words */}
-      <Snackbar
-        open={showBadWordAlert}
-        autoHideDuration={3000}
-        onClose={() => setShowBadWordAlert(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert severity="error" sx={{ width: "100%", borderRadius: "12px" }}>
-          ⚠️ No bad words allowed in chat!
-        </Alert>
-      </Snackbar>
     </Container>
   );
 }

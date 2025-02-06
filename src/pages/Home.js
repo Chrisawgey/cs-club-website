@@ -149,7 +149,23 @@ function HomePage() {
                   <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: { xs: '1rem', md: '1.25rem' } }}>UCNJ Computer Science & Cybersecurity Club</Typography> {/* Adjusted font size for mobile */}
                   <Typography variant="body2" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>1033 Springfield Ave.</Typography> {/* Adjusted font size for mobile */}
                   <Typography variant="body2" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>Cranford, NJ 07016</Typography> {/* Adjusted font size for mobile */}
-                  <Typography variant="body2" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>Created by Christopher Vargas</Typography> {/* Adjusted font size for mobile */}
+                  <Typography variant="body2" sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}>Created by{' '}
+                    <a 
+                    href="https://www.linkedin.com/in/chrisvpopoca/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    style={{ 
+                      textDecoration: 'underline', 
+                      color: '#1976d2',  
+                      fontWeight: 'bold',
+                      transition: 'color 0.2s ease-in-out'
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = '#125699'} 
+                    onMouseLeave={(e) => e.target.style.color = '#1976d2'}
+                  >
+                    Christopher Vargas
+                  </a>
+                </Typography>
                 </Grid>
               </Grid>
               <Typography variant="body2" sx={{ mt: 4, fontSize: { xs: '0.875rem', md: '1rem' } }}>© 2025 Union College of Union County</Typography> {/* Adjusted font size for mobile */}

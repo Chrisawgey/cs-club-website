@@ -10,6 +10,7 @@ import Projects from './pages/Projects';
 import AdminLogin from './pages/AdminLogin';  // Added Admin Login Page
 import AdminDashboard from './pages/AdminDashboard';  // Added Admin Dashboard
 import theme from './theme';
+import SurprisePage from './pages/Surprise';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/surprise" element={<SurprisePage/>} />
 
           {/* Admin Routes */}
           <Route path="/admin-login" element={<AdminLogin />} />

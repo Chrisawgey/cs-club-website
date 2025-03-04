@@ -9,7 +9,7 @@ function AdminLogin() {
   const handleLogin = () => {
     if (password === 'admincsclub2389') { 
       localStorage.setItem('isAdmin', 'true'); // Store admin status
-      navigate('/admin'); // Redirect to the admin page
+      navigate('/surprise'); // Redirect to the admin page
     } else {
       alert('Incorrect Password');
     }

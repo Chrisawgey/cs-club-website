@@ -224,7 +224,10 @@ function ClubChat() {
       maxWidth="md" 
       sx={{ 
         py: 4, 
-        pt: { xs: 10, sm: 4 } 
+        pt: { xs: 12, sm: 8 },  // Increased top padding to account for navbar
+        height: '100vh',  // Full viewport height
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
       <Paper
@@ -232,7 +235,7 @@ function ClubChat() {
         sx={{
           borderRadius: "16px",
           overflow: "hidden",
-          height: isMobile ? "95vh" : "80vh",
+          flex: 1,  // Take up remaining space
           display: "flex",
           flexDirection: "column",
           background: "linear-gradient(145deg, #f5f7fa, #e6e9f0)",

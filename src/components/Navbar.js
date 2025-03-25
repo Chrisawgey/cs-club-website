@@ -64,10 +64,14 @@ function Navbar() {
     <AppBar 
       position="fixed" 
       elevation={isScrolled ? 4 : 0}
+      className="main-navbar"
       sx={{
-        background: isScrolled ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+        background: isScrolled 
+          ? 'rgba(10, 10, 10, 0.95)' 
+          : 'linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.6))',
         backdropFilter: isScrolled ? 'blur(10px)' : 'none',
-        transition: 'all 0.3s ease'
+        transition: 'all 0.3s ease',
+        zIndex: 1200
       }}
     >
       <Container maxWidth="xl">
@@ -77,7 +81,7 @@ function Navbar() {
             display: 'flex', 
             alignItems: 'center', 
             textDecoration: 'none',
-            color: isScrolled ? 'text.primary' : 'white'
+            color: 'white'
           }}>
             <Box
               component="img"
@@ -95,7 +99,7 @@ function Navbar() {
               sx={{ 
                 fontWeight: 700,
                 fontSize: { xs: '1.1rem', sm: '1.3rem' },
-                color: isScrolled ? 'text.primary' : 'white'
+                color: 'white'
               }}
             >
               UCNJ CS & CybSEC
@@ -110,7 +114,7 @@ function Navbar() {
                 component={Link}
                 to={item.path}
                 sx={{
-                  color: isScrolled ? 'text.primary' : 'white',
+                  color: 'white',
                   fontSize: '1rem',
                   textTransform: 'none',
                   position: 'relative',
@@ -139,7 +143,7 @@ function Navbar() {
                 <Button
                   onClick={handleMenuOpen}
                   sx={{
-                    color: isScrolled ? 'text.primary' : 'white',
+                    color: 'white',
                     textTransform: 'none'
                   }}
                 >
@@ -198,16 +202,16 @@ function Navbar() {
 
           {/* Mobile Menu Button */}
           <IconButton
-            color={isScrolled ? 'inherit' : 'default'}
+            color="default"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
             sx={{ 
               display: { md: 'none' },
-              color: isScrolled ? 'text.primary' : 'white'
+              color: 'white'
             }}
           >
-            <MenuIcon />
+            <MenuIcon color="white" />
           </IconButton>
         </Toolbar>
       </Container>

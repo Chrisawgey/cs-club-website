@@ -10,12 +10,17 @@ import {
   Grid,
   Snackbar,
   Alert,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
-import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
-import { db, auth } from "../firebaseConfig"; // Import shared Firebase config
+import { collection, addDoc, onSnapshot, query, orderBy, limit } from "firebase/firestore";
+import { db, auth } from "../firebaseConfig";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import LogoutIcon from "@mui/icons-material/Logout";
+import GoogleIcon from '@mui/icons-material/Google';
+import SendIcon from '@mui/icons-material/Send';
+import { formatDistanceToNow } from 'date-fns';
 
 const badWords = [
   "fuck", "shit", "bitch", "cunt", "asshole", "bastard", "dick", "cock", "pussy",
@@ -69,8 +74,10 @@ function ClubChat() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [showBadWordAlert, setShowBadWordAlert] = useState(false);
-  const [showDisclaimer, setShowDisclaimer] = useState(true); // New disclaimer state
-  const messagesEndRef = useRef(null); // Auto-scroll ref
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const messagesEndRef = useRef(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Auto-scroll to the latest message
   const scrollToBottom = () => {
@@ -93,8 +100,9 @@ function ClubChat() {
     try {
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
+      setShowDisclaimer(false);
     } catch (error) {
-      alert("Failed to sign in. Please try again.");
+      console.error("Failed to sign in", error);
     }
   };
 
@@ -102,23 +110,35 @@ function ClubChat() {
     try {
       await signOut(auth);
       setUser(null);
+      setShowDisclaimer(true);
     } catch (error) {
-      alert("Failed to sign out.");
+      console.error("Failed to sign out", error);
     }
   };
 
   useEffect(() => {
     if (user) {
-      const q = query(collection(db, "messages"), orderBy("timestamp"));
+      const q = query(
+        collection(db, "messages"), 
+        orderBy("timestamp", "desc"), 
+        limit(50)
+      );
       return onSnapshot(q, (snapshot) => {
-        setMessages(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        const fetchedMessages = snapshot.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .reverse();
+        setMessages(fetchedMessages);
       });
     }
   }, [user]);
 
   const sendMessage = async () => {
     if (!user || !newMessage.trim()) return;
-    const containsBadWord = badWords.some((word) => newMessage.toLowerCase().includes(word));
+    
+    const containsBadWord = badWords.some((word) => 
+      newMessage.toLowerCase().includes(word)
+    );
+
     if (containsBadWord) {
       setShowBadWordAlert(true);
       setNewMessage("");
@@ -127,31 +147,98 @@ function ClubChat() {
 
     try {
       await addDoc(collection(db, "messages"), {
-        text: newMessage,
+        text: newMessage.trim(),
         timestamp: new Date(),
         user: user.displayName || "Anonymous",
         avatar: user.photoURL || "",
+        uid: user.uid
       });
       setNewMessage("");
     } catch (error) {
-      alert("Error sending message.");
+      console.error("Error sending message", error);
     }
   };
 
-  return (
-    <Container maxWidth="lg" sx={{ py: 4, pt: { xs: 8, sm: 4 } }}>
-      <Paper
-        elevation={3}
+  const renderChatMessage = (msg) => {
+    const isOwnMessage = msg.uid === user.uid;
+    const messageTimestamp = formatDistanceToNow(msg.timestamp.toDate(), { addSuffix: true });
+
+    return (
+      <Box
+        key={msg.id}
         sx={{
-          borderRadius: "12px",
-          overflow: "hidden",
-          height: "80vh",
           display: "flex",
-          flexDirection: "column",
-          background: "linear-gradient(145deg, #f5f5f5, #e0e0e0)",
+          alignItems: "flex-end",
+          mb: 2,
+          flexDirection: isOwnMessage ? "row-reverse" : "row",
         }}
       >
-        {/* Disclaimer Screen */}
+        <Avatar 
+          src={msg.avatar || "/default-avatar.png"} 
+          sx={{ 
+            width: 40, 
+            height: 40, 
+            mx: 1,
+            order: isOwnMessage ? 2 : 0
+          }} 
+        />
+        <Box
+          sx={{
+            maxWidth: "70%",
+            p: 1.5,
+            borderRadius: "12px",
+            backgroundColor: isOwnMessage ? "primary.main" : "grey.200",
+            color: isOwnMessage ? "white" : "text.primary",
+            boxShadow: 1,
+          }}
+        >
+          <Typography 
+            variant="subtitle2" 
+            sx={{ 
+              fontWeight: "bold", 
+              mb: 0.5,
+              color: isOwnMessage ? "white" : "text.secondary"
+            }}
+          >
+            {msg.user}
+          </Typography>
+          <Typography variant="body2">{msg.text}</Typography>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              display: 'block', 
+              textAlign: 'right', 
+              fontSize: '0.675rem',
+              color: isOwnMessage ? "rgba(255,255,255,0.7)" : "text.disabled"
+            }}
+          >
+            {messageTimestamp}
+          </Typography>
+        </Box>
+      </Box>
+    );
+  };
+
+  return (
+    <Container 
+      maxWidth="md" 
+      sx={{ 
+        py: 4, 
+        pt: { xs: 10, sm: 4 } 
+      }}
+    >
+      <Paper
+        elevation={6}
+        sx={{
+          borderRadius: "16px",
+          overflow: "hidden",
+          height: isMobile ? "95vh" : "80vh",
+          display: "flex",
+          flexDirection: "column",
+          background: "linear-gradient(145deg, #f5f7fa, #e6e9f0)",
+        }}
+      >
+        {/* Disclaimer and Authentication Screens */}
         {showDisclaimer ? (
           <Box
             sx={{
@@ -162,26 +249,35 @@ function ClubChat() {
               height: "100%",
               textAlign: "center",
               p: 4,
+              background: "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)",
+              color: "white"
             }}
           >
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
-              Welcome to the CS & Cybersecurity Club Chat! 💻
+            <ChatBubbleOutlineIcon sx={{ fontSize: 80, mb: 3, color: "white" }} />
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 2 }}>
+              Welcome to the CS & Cybersecurity Club Chat
             </Typography>
-            <Typography variant="body1" sx={{ maxWidth: "600px", mb: 3 }}>
-              This chat is a safe and welcoming space for discussions about computer science, cybersecurity, and club-related topics.  
-              Please be **respectful** to others, keep discussions appropriate, and avoid any offensive language.
+            <Typography variant="body1" sx={{ maxWidth: "600px", mb: 3, opacity: 0.9 }}>
+              A collaborative space for meaningful discussions about computer science, 
+              cybersecurity, and club-related topics.
             </Typography>
-            <Typography variant="body2" color="error" sx={{ mb: 3 }}>
-              ⚠️ No hate speech, offensive words, or inappropriate behavior will be tolerated.
+            <Typography variant="body2" sx={{ mb: 3, color: "yellow" }}>
+              ⚠️ Respect, professionalism, and inclusivity are our core values
             </Typography>
             <Button
               variant="contained"
-              color="primary"
+              color="secondary"
+              startIcon={<GoogleIcon />}
               size="large"
-              sx={{ fontSize: "1rem", fontWeight: "bold", px: 4 }}
-              onClick={() => setShowDisclaimer(false)}
+              onClick={signInWithGoogle}
+              sx={{ 
+                fontSize: "1rem", 
+                fontWeight: "bold", 
+                px: 4,
+                py: 1.5
+              }}
             >
-              Jump In 🚀
+              Sign in with Google
             </Button>
           </Box>
         ) : !user ? (
@@ -193,82 +289,76 @@ function ClubChat() {
               justifyContent: "center",
               height: "100%",
               p: 4,
+              background: "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)",
+              color: "white"
             }}
           >
-            <ChatBubbleOutlineIcon sx={{ fontSize: 50, color: "#3f51b5", mb: 2 }} />
-            <Typography variant="h5" gutterBottom>
-              Welcome to the Club Chat Room
+            <GoogleIcon sx={{ fontSize: 80, mb: 3, color: "white" }} />
+            <Typography variant="h4" gutterBottom>
+              Club Chat Authentication
             </Typography>
-            <Button variant="contained" onClick={signInWithGoogle}>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              startIcon={<GoogleIcon />}
+              size="large"
+              onClick={signInWithGoogle}
+            >
               Sign in with Google
             </Button>
           </Box>
         ) : (
+          // Chat Interface
           <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-            {/* Header */}
+            {/* Chat Header */}
             <Box
               sx={{
                 p: 2,
-                backgroundColor: "#3f51b5",
-                color: "#fff",
+                backgroundColor: "primary.main",
+                color: "white",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                boxShadow: 2
               }}
             >
-              <Typography variant="h6">Club Chat Room</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ChatBubbleOutlineIcon sx={{ mr: 2 }} />
+                <Typography variant="h6">Club Chat Room</Typography>
+              </Box>
               <Button
                 variant="contained"
-                color="secondary"
+                color="error"
                 startIcon={<LogoutIcon />}
                 onClick={handleSignOut}
-                sx={{ backgroundColor: "#d32f2f", "&:hover": { backgroundColor: "#b71c1c" } }}
+                size="small"
               >
                 Log Out
               </Button>
             </Box>
 
-            {/* Chat Messages */}
+            {/* Messages Container */}
             <Box
               sx={{
                 flex: 1,
                 overflowY: "auto",
                 p: 2,
-                backgroundColor: "#fafafa",
+                background: "linear-gradient(to bottom, #f5f7fa, #e6e9f0)",
               }}
             >
-              {messages.map((msg) => (
-                <Box
-                  key={msg.id}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    mb: 2,
-                    flexDirection: msg.user === user.displayName ? "row-reverse" : "row",
-                  }}
-                >
-                  <Avatar src={msg.avatar || "/default-avatar.png"} sx={{ mx: 2 }} />
-                  <Box
-                    sx={{
-                      p: 2,
-                      borderRadius: "12px",
-                      backgroundColor: msg.user === user.displayName ? "#3f51b5" : "#e0e0e0",
-                      color: msg.user === user.displayName ? "#fff" : "#000",
-                      maxWidth: "70%",
-                    }}
-                  >
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                      {msg.user}
-                    </Typography>
-                    <Typography variant="body2">{msg.text}</Typography>
-                  </Box>
-                </Box>
-              ))}
+              {messages.map(renderChatMessage)}
               <div ref={messagesEndRef} />
             </Box>
 
             {/* Message Input */}
-            <Box sx={{ p: 2, backgroundColor: "#fff", borderTop: "1px solid #e0e0e0" }}>
+            <Box 
+              sx={{ 
+                p: 2, 
+                backgroundColor: "background.paper", 
+                borderTop: "1px solid",
+                borderColor: "divider"
+              }}
+            >
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={10}>
                   <TextField
@@ -283,17 +373,47 @@ function ClubChat() {
                         sendMessage();
                       }
                     }}
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': { 
+                        borderRadius: 4 
+                      } 
+                    }}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <Button fullWidth variant="contained" color="primary" onClick={sendMessage} sx={{ height: "56px" }}>
-                    Send
+                  <Button 
+                    fullWidth 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={sendMessage} 
+                    sx={{ 
+                      height: "56px", 
+                      borderRadius: 4 
+                    }}
+                  >
+                    {isMobile ? <SendIcon /> : "Send"}
                   </Button>
                 </Grid>
               </Grid>
             </Box>
           </Box>
         )}
+
+        {/* Bad Word Alert */}
+        <Snackbar
+          open={showBadWordAlert}
+          autoHideDuration={3000}
+          onClose={() => setShowBadWordAlert(false)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert 
+            onClose={() => setShowBadWordAlert(false)} 
+            severity="error" 
+            sx={{ width: '100%' }}
+          >
+            Please maintain appropriate language in the chat.
+          </Alert>
+        </Snackbar>
       </Paper>
     </Container>
   );
